@@ -1,19 +1,12 @@
 package com.yasir.compose.assessment.data.local
 
-import com.yasir.compose.assessment.data.model.Medicine
-import com.yasir.compose.assessment.domain.ResultWrapper
-import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
+import com.yasir.compose.assessment.domain.model.Medicine
 
-class LocalDataSource @Inject constructor(
-    private val medicineDao: MedicineDao
-) {
+interface LocalDataSource {
 
-    fun getAllMedicines(): Flow<ResultWrapper<List<Medicine>>> {
-        return medicineDao.getAllMedicines()
-    }
+    suspend fun getAllMedicines(): List<Medicine>
 
-    fun insertAll(medicines: List<Medicine>) {
-        medicineDao.insertAll(medicines)
-    }
+    suspend fun insertAll(medicines: List<Medicine>)
+
+    suspend fun getMedicineById(medicineId: Int): Medicine
 }

@@ -2,9 +2,11 @@ package com.yasir.compose.assessment.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.yasir.compose.assessment.R
 
 // Set of Material typography styles to start with
 val Typography = Typography(
@@ -29,4 +31,11 @@ val Typography = Typography(
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     )
+)
+
+val AppFont = FontFamily(
+    Font(R.font.poppinsmedium, FontWeight.Medium),
+    Font(R.font.poppinsregular, FontWeight.Normal),
+    Font(R.font.poppinsthin, FontWeight.Thin),
+    Font(R.font.poppinssemibold, FontWeight.SemiBold),
 )

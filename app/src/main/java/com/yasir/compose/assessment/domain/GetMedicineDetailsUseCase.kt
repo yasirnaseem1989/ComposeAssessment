@@ -6,12 +6,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetMedicinesUseCase @Inject constructor(
-    private val repository: MedicineRepository,
+class GetMedicineDetailsUseCase @Inject constructor(
+    private val repository: MedicineRepository
 ) {
-    suspend fun invoke(): List<Medicine> =
-        withContext(Dispatchers.IO) {
-            repository.getAllMedicines()
-        }
-}
 
+    suspend fun invoke(medicineId: Int): Medicine =
+        withContext(Dispatchers.IO) {
+            repository.getMedicineById(medicineId)
+        }
+
+}

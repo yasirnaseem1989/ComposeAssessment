@@ -54,9 +54,10 @@ android {
 
 dependencies {
 
-    val hiltVersion = "2.49"
+    val hiltVersion = "2.48"
     val roomVersion = "2.6.1"
     val retrofitVersion = "2.9.0"
+    val okHttp = "4.12.0"
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
@@ -65,7 +66,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:1.2.1")
     implementation ("androidx.navigation:navigation-compose:2.7.7")
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.8.3")
 
@@ -80,10 +81,13 @@ dependencies {
     implementation ("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation ("com.google.dagger:hilt-android:$hiltVersion")
     kapt ("com.google.dagger:hilt-android-compiler:$hiltVersion")
+
     implementation ("androidx.room:room-runtime:$roomVersion")
     kapt ("androidx.room:room-compiler:$roomVersion")
     implementation ("androidx.room:room-ktx:$roomVersion")
 
+    implementation("com.squareup.okhttp3:okhttp:$okHttp")
+    implementation("com.squareup.okhttp3:logging-interceptor:$okHttp")
     implementation ("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation ("com.squareup.retrofit2:converter-gson:$retrofitVersion")
 }

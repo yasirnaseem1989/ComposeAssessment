@@ -3,12 +3,13 @@ package com.yasir.compose.assessment.di
 import android.app.Application
 import androidx.room.Room
 import com.yasir.compose.assessment.data.local.LocalDataSource
+import com.yasir.compose.assessment.data.local.LocalMedicineDataSource
 import com.yasir.compose.assessment.data.local.MedicineDao
 import com.yasir.compose.assessment.data.local.MedicineDatabase
+import com.yasir.compose.assessment.data.mapper.MedicineMapper
 import com.yasir.compose.assessment.data.remote.MedicineApiService
 import com.yasir.compose.assessment.data.remote.RemoteDataSource
-import com.yasir.compose.assessment.data.repository.MedicineRepository
-import com.yasir.compose.assessment.data.repository.MedicineRepositoryImpl
+import com.yasir.compose.assessment.data.remote.RemoteMedicineDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,22 +34,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMedicineRepository(
-        localDataSource: LocalDataSource,
-        remoteDataSource: RemoteDataSource
-    ): MedicineRepository {
-        return MedicineRepositoryImpl(localDataSource, remoteDataSource)
-    }
+    fun provideMedicineRemoteDataSource(
+        apiService: MedicineApiService,
+        medicineMapper: MedicineMapper,
+    ): RemoteDataSource =
+        RemoteMedicineDataSource(apiService, medicineMapper)
+
 
     @Provides
     @Singleton
-    fun provideLocalDataSource(medicineDao: MedicineDao): LocalDataSource {
-        return LocalDataSource(medicineDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideRemoteDataSource(apiService: MedicineApiService): RemoteDataSource {
-        return RemoteDataSource(apiService)
-    }
+    fun provideLocalMedicineDataSource(medicineDao: MedicineDao): LocalDataSource =
+        LocalMedicineDataSource(medicineDao)
 }

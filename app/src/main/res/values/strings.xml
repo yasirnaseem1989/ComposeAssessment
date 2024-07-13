@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">ComposeAssessment</string>
+    <string name="welcome_back">Welcome\nback</string>
+    <string name="login_message">Log in to Assessment</string>
+    <string name="user_name">User Name</string>
+    <string name="button_label_login">Login</string>
+    <string name="text_morning">Good Morning</string>
+    <string name="text_afternoon">Good Afternoon</string>
+    <string name="text_evening">Good Evening</string>
+    <string name="screen_medicine_detail">Medicine Detail</string>
 </resources>
