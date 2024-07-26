@@ -1,6 +1,8 @@
 package com.yasir.compose.assessment.ui.medicine
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.yasir.compose.assessment.data.repository.ErrorType.Generic
+import com.yasir.compose.assessment.data.repository.Result
 import com.yasir.compose.assessment.domain.GetMedicineDetailsUseCase
 import com.yasir.compose.assessment.domain.model.Medicine
 import kotlinx.coroutines.Dispatchers
@@ -59,7 +61,7 @@ class MedicineDetailViewModelTest {
     @Test
     fun `test fetch medicine details successful`() = testScope.runTest {
         val medicine = Medicine(id = 2, name = "Medicine 2", dose = "Tablet", strength = "Pandol")
-        `when`(getMedicineDetailsUseCase.invoke(1)).thenReturn(medicine)
+        `when`(getMedicineDetailsUseCase.invoke(1)).thenReturn(Result.Success(medicine))
 
         viewModel.setMedicineId(1)
         viewModel.fetchMedicineDetails()
@@ -69,6 +71,25 @@ class MedicineDetailViewModelTest {
         val expectedState = MedicineDetailUiState(
             isLoading = false,
             medicine = medicine
+        )
+
+        assertEquals(expectedState, viewModel.medicineDetailUiState.value)
+    }
+
+    @Test
+    fun `test fetch medicine details failure`() = testScope.runTest {
+        val error = Result.Error(Generic("Medicine not found"))
+        `when`(getMedicineDetailsUseCase.invoke(1)).thenReturn(error)
+
+        viewModel.setMedicineId(1)
+        viewModel.fetchMedicineDetails()
+
+        advanceUntilIdle()
+
+        val expectedState = MedicineDetailUiState(
+            isLoading = false,
+            isError = true,
+            errorType = error.exception
         )
 
         assertEquals(expectedState, viewModel.medicineDetailUiState.value)

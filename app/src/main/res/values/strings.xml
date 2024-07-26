@@ -8,4 +8,5 @@
     <string name="text_afternoon">Good Afternoon</string>
     <string name="text_evening">Good Evening</string>
     <string name="screen_medicine_detail">Medicine Detail</string>
+    <string name="text_generic_error">Oops, something went wrong. Please try later.</string>
 </resources>

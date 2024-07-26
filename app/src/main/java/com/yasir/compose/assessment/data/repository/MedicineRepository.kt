@@ -3,6 +3,7 @@ package com.yasir.compose.assessment.data.repository
 import com.yasir.compose.assessment.data.local.LocalDataSource
 import com.yasir.compose.assessment.data.mapper.MedicineViewItemMapper
 import com.yasir.compose.assessment.data.remote.RemoteDataSource
+import com.yasir.compose.assessment.data.repository.ErrorType.Generic
 import com.yasir.compose.assessment.domain.model.Medicine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,26 +14,34 @@ class MedicineRepository @Inject constructor(
     private val localDataSource: LocalDataSource,
     private val medicineViewItemMapper: MedicineViewItemMapper,
 ) {
-    suspend fun getAllMedicines(): List<Medicine> {
+    suspend fun getAllMedicines(): Result<List<Medicine>> {
+        val medicineData = localDataSource.getAllMedicines()
+        if (medicineData.isNotEmpty()) {
+            return Result.Success(medicineData)
+        }
 
-        val medicineData: List<Medicine> = localDataSource.getAllMedicines()
-
-        return medicineData.ifEmpty {
-            val data = remoteDataSource.getMedicines()
-            if (data.isEmpty()) {
-                medicineData
-            } else {
+        return when (val remoteResult = remoteDataSource.getMedicines()) {
+            is Result.Success -> {
                 val medicines =
-                    data.firstOrNull()?.diabetes?.firstOrNull()?.medications?.firstOrNull()?.medicationsClasses.orEmpty()
+                    remoteResult.data.firstOrNull()?.diabetes?.firstOrNull()?.medications?.firstOrNull()?.medicationsClasses.orEmpty()
                 val medicineViewItem = medicineViewItemMapper.map(medicines)
                 withContext(Dispatchers.IO) {
                     localDataSource.insertAll(medicineViewItem)
                 }
-                medicineViewItem
+                Result.Success(medicineViewItem)
+            }
+            is Result.Error -> {
+                Result.Error(remoteResult.exception)
             }
         }
     }
 
-    suspend fun getMedicineById(medicineId: Int): Medicine =
-        localDataSource.getMedicineById(medicineId = medicineId)
+    suspend fun getMedicineById(medicineId: Int): Result<Medicine> {
+        val medicine = localDataSource.getMedicineById(medicineId)
+        return if (medicine.hasValidId()) {
+            Result.Success(medicine)
+        } else {
+            Result.Error(Generic("Medicine not found"))
+        }
+    }
 }

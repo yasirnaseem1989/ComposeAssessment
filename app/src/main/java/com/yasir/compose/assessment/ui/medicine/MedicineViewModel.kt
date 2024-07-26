@@ -1,7 +1,10 @@
 package com.yasir.compose.assessment.ui.medicine
 
+import com.yasir.compose.assessment.data.repository.Result
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yasir.compose.assessment.data.repository.ErrorType
+import com.yasir.compose.assessment.data.repository.ErrorType.Unknown
 import com.yasir.compose.assessment.domain.GetMedicinesUseCase
 import com.yasir.compose.assessment.domain.model.Medicine
 import com.yasir.compose.assessment.utils.AssessmentUtils
@@ -29,12 +32,25 @@ class MedicineViewModel @Inject constructor(
                     greetingMessage = greetingMessage
                 )
             }
-            val result = getMedicinesUseCase.invoke()
-            _medicineUiState.update { medicineUiState ->
-                medicineUiState.copy(
-                    isLoading = false,
-                    medicinesViewItem = result
-                )
+            when (val medicines = getMedicinesUseCase.invoke()) {
+                is Result.Success -> {
+                    _medicineUiState.update { medicineUiState ->
+                        medicineUiState.copy(
+                            isLoading = false,
+                            medicinesViewItem = medicines.data
+                        )
+                    }
+                }
+
+                is Result.Error -> {
+                    _medicineUiState.update { medicineUiState ->
+                        medicineUiState.copy(
+                            isLoading = false,
+                            isError = true,
+                            errorType = medicines.exception
+                        )
+                    }
+                }
             }
         }
     }
@@ -43,6 +59,7 @@ class MedicineViewModel @Inject constructor(
 data class MedicineUiState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
+    val errorType: ErrorType = Unknown,
     val medicinesViewItem: List<Medicine> = emptyList(),
     val greetingMessage: String = ""
 ) {

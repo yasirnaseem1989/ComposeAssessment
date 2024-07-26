@@ -45,8 +45,8 @@ class MedicineRepositoryTest {
         // Act
         val result = medicineRepository.getAllMedicines()
 
-        // Asset
-        assertEquals(localMedicines, result)
+        // Assert
+        assertEquals(Result.Success(localMedicines), result)
         Mockito.verify(localDataSource).getAllMedicines()
         Mockito.verifyNoInteractions(remoteDataSource)
         Mockito.verifyNoInteractions(medicineViewItemMapper)
@@ -56,15 +56,13 @@ class MedicineRepositoryTest {
     fun `test getMedicineById returns correct medicine`() = runTest {
         // Arrange
         val medicineId = 2
-        val medicine = Medicine(medicineId, "Aspirin", "500mg", "Tablet")
+        val medicine = Medicine(id = medicineId, name = "Aspirin", dose = "500mg", strength = "Tablet")
+        Mockito.`when`(localDataSource.getMedicineById(2)).thenReturn(medicine)
 
         // Act
-        Mockito.`when`(localDataSource.getMedicineById(medicineId)).thenReturn(medicine)
-
         val result = medicineRepository.getMedicineById(medicineId)
 
-        // Asset
-        assertEquals(medicine, result)
-        Mockito.verify(localDataSource).getMedicineById(medicineId)
+        // Assert
+        assertEquals(Result.Success(medicine), result)
     }
 }

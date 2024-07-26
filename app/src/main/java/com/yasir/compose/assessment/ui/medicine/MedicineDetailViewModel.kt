@@ -2,6 +2,9 @@ package com.yasir.compose.assessment.ui.medicine
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yasir.compose.assessment.data.repository.ErrorType
+import com.yasir.compose.assessment.data.repository.ErrorType.Unknown
+import com.yasir.compose.assessment.data.repository.Result
 import com.yasir.compose.assessment.domain.GetMedicineDetailsUseCase
 import com.yasir.compose.assessment.domain.model.Medicine
 import com.yasir.compose.assessment.utils.ext.orFalse
@@ -31,12 +34,26 @@ class MedicineDetailViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            val fetchedMedicine = getMedicineDetailsUseCase.invoke(medicineId)
-            _medicineDetailUiState.update { medicineUiState ->
-                medicineUiState.copy(
-                    isLoading = false,
-                    medicine = fetchedMedicine
-                )
+
+
+            when (val fetchedMedicine = getMedicineDetailsUseCase.invoke(medicineId)) {
+                is Result.Success -> {
+                    _medicineDetailUiState.update { medicineUiState ->
+                        medicineUiState.copy(
+                            isLoading = false,
+                            medicine = fetchedMedicine.data
+                        )
+                    }
+                }
+                is Result.Error -> {
+                    _medicineDetailUiState.update { medicineUiState ->
+                        medicineUiState.copy(
+                            isLoading = false,
+                            isError = true,
+                            errorType = fetchedMedicine.exception
+                        )
+                    }
+                }
             }
         }
     }
@@ -50,7 +67,8 @@ data class MedicineDetailUiState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
     val medicine: Medicine? = null,
-    val greetingMessage: String = ""
+    val greetingMessage: String = "",
+    val errorType: ErrorType = Unknown,
 ) {
     fun hasData(): Boolean = medicine?.hasValidId().orFalse()
 }

@@ -1,14 +1,19 @@
 package com.yasir.compose.assessment.ui.medicine
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.yasir.compose.assessment.data.repository.Result
 import com.yasir.compose.assessment.domain.GetMedicinesUseCase
 import com.yasir.compose.assessment.domain.model.Medicine
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -38,7 +43,13 @@ class MedicineViewModelTest {
 
     @Before
     fun setUp() {
+        Dispatchers.setMain(testDispatcher)
         viewModel = MedicineViewModel(getMedicinesUseCase)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test
@@ -53,7 +64,7 @@ class MedicineViewModelTest {
             Medicine(id = 1, name = "Medicine 1", dose = "Tablet", strength = "Asprin"),
             Medicine(id = 2, name = "Medicine 2", dose = "Tablet", strength = "Pandol")
         )
-        `when`(getMedicinesUseCase.invoke()).thenReturn(medicines)
+        `when`(getMedicinesUseCase.invoke()).thenReturn(Result.Success(medicines))
 
         viewModel = MedicineViewModel(getMedicinesUseCase)
 

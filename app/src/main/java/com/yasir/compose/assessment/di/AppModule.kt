@@ -8,6 +8,7 @@ import com.yasir.compose.assessment.data.local.MedicineDao
 import com.yasir.compose.assessment.data.local.MedicineDatabase
 import com.yasir.compose.assessment.data.mapper.MedicineMapper
 import com.yasir.compose.assessment.data.remote.MedicineApiService
+import com.yasir.compose.assessment.data.remote.NetworkHandler
 import com.yasir.compose.assessment.data.remote.RemoteDataSource
 import com.yasir.compose.assessment.data.remote.RemoteMedicineDataSource
 import dagger.Module
@@ -37,9 +38,13 @@ object AppModule {
     fun provideMedicineRemoteDataSource(
         apiService: MedicineApiService,
         medicineMapper: MedicineMapper,
+        networkHandler: NetworkHandler
     ): RemoteDataSource =
-        RemoteMedicineDataSource(apiService, medicineMapper)
-
+        RemoteMedicineDataSource(
+            apiService = apiService,
+            medicineMapper = medicineMapper,
+            networkHandler = networkHandler
+        )
 
     @Provides
     @Singleton
